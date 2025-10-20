@@ -1,0 +1,109 @@
+
+version: 1
+name: co-cities-vegalite-top15
+goal: >
+  Implement a vertical Vega-Lite bar chart showing the Top 15 Colorado places by population.
+  Bars sorted by population descending; optional color by density (/mi²).
+  Emit a DOM CustomEvent `chart:selection` with `{ geoids: string[] }` on bar selection.
+
+constraints:
+  - Keep chart spec and theme in separate JSON files under `specs/vega-lite/`.
+  - Data must be loaded from `/data/colorado-cities-enriched.geojson`.
+  - Only Top 15 by population should be rendered.
+  - Ensure chart is accessible and responsive.
+
+inputs:
+  data:
+    path: data/colorado-cities-enriched.geojson
+    type: geojson
+    mapping:
+      geoid: properties.GEOID
+      name: properties.NAME
+      pop: properties.Total_Pop
+      aland_m2: properties.ALAND
+    derived:
+      density_per_sqmi: pop / (aland_m2 * 0.00000038610215855)
+
+deliverables:
+  - path: package.json
+    type: node-package
+  - path: specs/vega-lite/chart.json
+    type: vega-lite-spec
+  - path: specs/vega-lite/theme.json
+    type: vega-lite-theme
+  - path: src/index.html
+    type: html
+  - path: src/styles.css
+    type: css
+  - path: src/embed.js
+    type: module
+
+public_api:
+  events:
+    - name: chart:selection
+      detail_schema:
+        geoids: array[string]
+      description: Fired whenever one or more bars are selected in the chart.
+
+commands:
+  dev: npm run dev
+  build: npm run build
+  preview: npm run preview
+
+tasks:
+  - id: scaffold
+    description: Initialize Vite and dependencies (vega, vega-lite, vega-embed).
+    acceptance:
+      - package.json has dev/build/preview scripts.
+      - App serves index.html at dev URL.
+
+  - id: parse-geojson
+    description: Transform FeatureCollection -> rows with {geoid, name, pop, density (/mi²)}.
+    acceptance:
+      - Invalid rows (missing geoid/name or non-finite pop) are filtered out.
+
+  - id: theme
+    description: Create theme.json and merge its `config` into the chart spec at runtime.
+    acceptance:
+      - Themed axes/legend/bar radius visible in render.
+
+  - id: chart-spec
+    description: Implement vertical bar chart (Top 15 by population).
+    acceptance:
+      - Use Vega-Lite `window` to compute rank by `pop` (descending) and filter `rank <= 15`.
+      - x: name (ordinal), y: pop (quantitative), bars vertical.
+      - Axis labels on x rotated to improve readability.
+      - Tooltip shows name, GEOID, population (comma), density (comma).
+
+  - id: color-density
+    description: (Optional) Color bars by density (/mi²) with quantitative legend.
+    acceptance:
+      - If implemented, the legend renders and tooltips show density.
+
+  - id: selection
+    description: Add click selection by `geoid`; fade unselected; dblclick clears.
+    acceptance:
+      - Dispatch `chart:selection` with `{ geoids: [...] }`.
+      - Console logs selected GEOIDs.
+
+  - id: accessibility
+    description: Basic a11y affordances.
+    acceptance:
+      - Container has role="img" and aria-labelledby.
+      - Chart is keyboard reachable; tooltip does not trap focus.
+
+  - id: run-dev
+    description: Launch dev server for manual QA.
+    run: dev
+
+checks:
+  manual:
+    - Exactly 15 bars render, sorted by population descending.
+    - X labels readable (rotated/abbreviated) on a ~900px container.
+    - Selection updates opacity and fires `chart:selection`.
+    - Works in Chrome, Safari, Firefox.
+
+success_criteria:
+  - Renders Top 15 correctly from uploaded GeoJSON.
+  - `chart:selection` event emitted with correct GEOIDs.
+  - Accessible structure and responsive labels.

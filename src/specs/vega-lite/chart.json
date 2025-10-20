@@ -1,0 +1,110 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Top 15 Colorado cities by population - vertical bar chart",
+  "width": "container",
+  "height": 420,
+  "data": {
+    "name": "table"
+  },
+  "transform": [
+    {
+      "window": [
+        {
+          "op": "rank",
+          "field": "pop",
+          "as": "rank"
+        }
+      ],
+      "sort": [
+        {
+          "field": "pop",
+          "order": "descending"
+        }
+      ]
+    },
+    {
+      "filter": "datum.rank <= 15"
+    }
+  ],
+  "mark": {
+    "type": "bar",
+    "tooltip": true
+  },
+  "config": {
+    "bar": {
+      "cornerRadius": 2
+    }
+  },
+  "encoding": {
+    "x": {
+      "field": "name",
+      "type": "nominal",
+      "axis": {
+        "labelAngle": -40,
+        "labelLimit": 140,
+        "labelOverlap": false,
+        "title": "City"
+      }
+    },
+    "y": {
+      "field": "pop",
+      "type": "quantitative",
+      "axis": {
+        "title": "Population",
+        "format": ","
+      }
+    },
+    "color": {
+      "field": "density",
+      "type": "quantitative",
+      "scale": {
+        "scheme": "viridis"
+      },
+      "legend": {
+        "title": "Density (per mi²)",
+        "format": ",.0f"
+      }
+    },
+    "opacity": {
+      "condition": {
+        "param": "selected_geoids",
+        "value": 1
+      },
+      "value": 0.35
+    },
+    "tooltip": [
+      {
+        "field": "name",
+        "type": "nominal",
+        "title": "City"
+      },
+      {
+        "field": "geoid",
+        "type": "nominal",
+        "title": "GEOID"
+      },
+      {
+        "field": "pop",
+        "type": "quantitative",
+        "title": "Population",
+        "format": ","
+      },
+      {
+        "field": "density",
+        "type": "quantitative",
+        "title": "Density (per mi²)",
+        "format": ",.0f"
+      }
+    ]
+  },
+  "params": [
+    {
+      "name": "selected_geoids",
+      "select": {
+        "type": "point",
+        "fields": ["geoid"],
+        "on": "click"
+      }
+    }
+  ]
+}
