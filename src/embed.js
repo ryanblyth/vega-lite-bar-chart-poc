@@ -62,10 +62,33 @@ async function loadChartSpec() {
   }
 }
 
+// Check if animations should be enabled
+function shouldAnimate() {
+  const body = document.body;
+  const isMobile = window.innerWidth <= 480;
+  
+  // Check global animation setting
+  if (body.classList.contains('no-animations')) {
+    return false;
+  }
+  
+  // Check mobile animation setting
+  if (isMobile && body.classList.contains('no-mobile-animations')) {
+    return false;
+  }
+  
+  return true;
+}
+
 // Animate bars with GSAP
 function animateBars(container) {
   if (typeof gsap === 'undefined') {
     console.error('GSAP is not loaded. Please check the CDN link in index.html');
+    return;
+  }
+  
+  // Check if animations should be enabled
+  if (!shouldAnimate()) {
     return;
   }
   
@@ -123,12 +146,38 @@ async function renderChart() {
       .sort((a, b) => b.pop - a.pop)
       .slice(0, 15);
 
+    // Adjust legend orientation and font sizes based on screen size
+    const isMobile = window.innerWidth <= 768;
+    const isSmallMobile = window.innerWidth <= 480;
+    
+    const adjustedChartSpec = {
+      ...chartSpec,
+      encoding: {
+        ...chartSpec.encoding,
+        x: {
+          ...chartSpec.encoding.x,
+          axis: {
+            ...chartSpec.encoding.x.axis,
+            labelFontSize: isSmallMobile ? 10 : (isMobile ? 11 : 12)
+          }
+        },
+        color: {
+          ...chartSpec.encoding.color,
+          legend: {
+            ...chartSpec.encoding.color.legend,
+            orient: isMobile ? "bottom" : "right",
+            direction: isMobile ? "horizontal" : "vertical"
+          }
+        }
+      }
+    };
+
     // Merge theme config into chart spec and add filtered data
     const spec = {
-      ...chartSpec,
+      ...adjustedChartSpec,
       config: {
         ...theme.config,
-        ...chartSpec.config
+        ...adjustedChartSpec.config
       },
       data: {
         values: top15Cities
@@ -167,8 +216,8 @@ async function renderChart() {
       });
     }, 200);
 
-    // Set initial state for bars immediately to prevent flash
-    if (typeof gsap !== 'undefined') {
+    // Set initial state for bars immediately to prevent flash (only if animations are enabled)
+    if (typeof gsap !== 'undefined' && shouldAnimate()) {
       const setInitialState = () => {
         const allPaths = container.querySelectorAll('path');
         const bars = Array.from(allPaths).filter(bar => {
@@ -220,11 +269,128 @@ async function renderChart() {
       }
     });
 
+    // Handle scroll indicator for mobile
+    setupScrollIndicator();
+
   } catch (error) {
     console.error('Error rendering chart:', error);
     container.innerHTML = '<p>Error loading chart. Please check the console for details.</p>';
   }
 }
+
+// Handle window resize for responsive legend
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    // Re-render chart on resize to adjust legend position
+    const container = document.getElementById('chart');
+    if (container && container.innerHTML.trim()) {
+      renderChart();
+    }
+  }, 250);
+});
+
+// Setup scroll indicator for mobile (only when mobile-scroll class is present)
+function setupScrollIndicator() {
+  const chartContainer = document.querySelector('.chart-container');
+  const body = document.body;
+  
+  if (!chartContainer) return;
+  
+  // Check if mobile scroll is enabled
+  const isMobileScrollEnabled = () => {
+    return body.classList.contains('mobile-scroll');
+  };
+
+  // Check if container is scrollable
+  const isScrollable = () => {
+    return chartContainer.scrollWidth > chartContainer.clientWidth;
+  };
+
+  // Check if user has scrolled
+  const hasScrolled = () => {
+    return chartContainer.scrollLeft > 0;
+  };
+
+  // Update classes based on scroll state
+  const updateScrollState = () => {
+    // Only proceed if mobile scroll is enabled
+    if (!isMobileScrollEnabled()) {
+      chartContainer.classList.remove('scrollable', 'scrolled');
+      return;
+    }
+    
+    if (isScrollable()) {
+      chartContainer.classList.add('scrollable');
+      if (hasScrolled()) {
+        chartContainer.classList.add('scrolled');
+      } else {
+        chartContainer.classList.remove('scrolled');
+      }
+    } else {
+      chartContainer.classList.remove('scrollable', 'scrolled');
+    }
+  };
+
+  // Listen for scroll events
+  chartContainer.addEventListener('scroll', updateScrollState);
+  
+  // Listen for resize events
+  window.addEventListener('resize', () => {
+    setTimeout(updateScrollState, 100); // Small delay to ensure layout is updated
+  });
+
+  // Initial check
+  setTimeout(updateScrollState, 200); // Delay to ensure chart is rendered
+}
+
+// Utility functions for mobile scroll configuration
+window.toggleMobileScroll = function(enable) {
+  const body = document.body;
+  if (enable) {
+    body.classList.add('mobile-scroll');
+  } else {
+    body.classList.remove('mobile-scroll');
+  }
+  // Re-run scroll indicator setup to update state
+  setupScrollIndicator();
+};
+
+window.isMobileScrollEnabled = function() {
+  return document.body.classList.contains('mobile-scroll');
+};
+
+// Utility functions for animation configuration
+window.toggleAnimations = function(enable) {
+  const body = document.body;
+  if (enable) {
+    body.classList.remove('no-animations');
+  } else {
+    body.classList.add('no-animations');
+  }
+  // Re-render chart to apply animation changes
+  renderChart();
+};
+
+window.toggleMobileAnimations = function(enable) {
+  const body = document.body;
+  if (enable) {
+    body.classList.remove('no-mobile-animations');
+  } else {
+    body.classList.add('no-mobile-animations');
+  }
+  // Re-render chart to apply animation changes
+  renderChart();
+};
+
+window.areAnimationsEnabled = function() {
+  return !document.body.classList.contains('no-animations');
+};
+
+window.areMobileAnimationsEnabled = function() {
+  return !document.body.classList.contains('no-mobile-animations');
+};
 
 // Initialize the chart when the page loads
 document.addEventListener('DOMContentLoaded', renderChart);
