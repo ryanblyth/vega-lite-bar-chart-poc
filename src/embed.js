@@ -123,12 +123,38 @@ async function renderChart() {
       .sort((a, b) => b.pop - a.pop)
       .slice(0, 15);
 
+    // Adjust legend orientation and font sizes based on screen size
+    const isMobile = window.innerWidth <= 768;
+    const isSmallMobile = window.innerWidth <= 480;
+    
+    const adjustedChartSpec = {
+      ...chartSpec,
+      encoding: {
+        ...chartSpec.encoding,
+        x: {
+          ...chartSpec.encoding.x,
+          axis: {
+            ...chartSpec.encoding.x.axis,
+            labelFontSize: isSmallMobile ? 10 : (isMobile ? 11 : 12)
+          }
+        },
+        color: {
+          ...chartSpec.encoding.color,
+          legend: {
+            ...chartSpec.encoding.color.legend,
+            orient: isMobile ? "bottom" : "right",
+            direction: isMobile ? "horizontal" : "vertical"
+          }
+        }
+      }
+    };
+
     // Merge theme config into chart spec and add filtered data
     const spec = {
-      ...chartSpec,
+      ...adjustedChartSpec,
       config: {
         ...theme.config,
-        ...chartSpec.config
+        ...adjustedChartSpec.config
       },
       data: {
         values: top15Cities
@@ -225,6 +251,19 @@ async function renderChart() {
     container.innerHTML = '<p>Error loading chart. Please check the console for details.</p>';
   }
 }
+
+// Handle window resize for responsive legend
+let resizeTimeout;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    // Re-render chart on resize to adjust legend position
+    const container = document.getElementById('chart');
+    if (container && container.innerHTML.trim()) {
+      renderChart();
+    }
+  }, 250);
+});
 
 // Initialize the chart when the page loads
 document.addEventListener('DOMContentLoaded', renderChart);

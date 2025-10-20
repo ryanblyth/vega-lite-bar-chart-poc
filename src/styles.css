@@ -51,7 +51,29 @@ h1 {
   }
   
   #chart {
-    height: 350px;
-    min-height: 350px;
+    height: 450px;
+    min-height: 450px;
+  }
+}
+
+@media (max-width: 480px) {
+/* The scroll container */
+  .chart-container{
+    max-width: 100%;
+    overflow-x: auto;     /* horizontal scroll here */
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;  /* smooth on iOS */
+    overscroll-behavior-x: contain;     /* stop scroll chaining to page */
+    scrollbar-gutter: stable both-edges;/* optional: nicer layout with scrollbars */
+  }
+  #chart {
+    height: 500px;
+    min-height: 500px;
+  }
+  .chart-container > #chart{
+    display: inline-block;     /* or inline-block; either works */
+    gap: 1rem;                /* optional */
+    min-width: max-content;   /* key: don’t shrink—be as wide as needed */
+    width: 600px;
   }
 }

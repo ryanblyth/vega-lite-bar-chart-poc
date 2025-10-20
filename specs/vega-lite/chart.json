@@ -3,6 +3,7 @@
   "description": "Top 15 Colorado cities by population - vertical bar chart",
   "width": "container",
   "height": 420,
+  "padding": {"top": 10, "left": 60, "bottom": 80, "right": 20},
   "mark": {
     "type": "bar",
     "tooltip": true
@@ -40,7 +41,14 @@
       },
       "legend": {
         "title": "Density (per mi²)",
-        "format": ",.0f"
+        "format": ",.0f",
+        "orient": "bottom",
+        "direction": "horizontal",
+        "titleOrient": "left",
+        "labelFontSize": 12,
+        "titleFontSize": 13,
+        "symbolSize": 100,
+        "offset": 10
       }
     },
     "opacity": {
