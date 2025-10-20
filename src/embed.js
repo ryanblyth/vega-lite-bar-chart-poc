@@ -246,6 +246,9 @@ async function renderChart() {
       }
     });
 
+    // Handle scroll indicator for mobile
+    setupScrollIndicator();
+
   } catch (error) {
     console.error('Error rendering chart:', error);
     container.innerHTML = '<p>Error loading chart. Please check the console for details.</p>';
@@ -264,6 +267,47 @@ window.addEventListener('resize', () => {
     }
   }, 250);
 });
+
+// Setup scroll indicator for mobile
+function setupScrollIndicator() {
+  const chartContainer = document.querySelector('.chart-container');
+  if (!chartContainer) return;
+
+  // Check if container is scrollable
+  const isScrollable = () => {
+    return chartContainer.scrollWidth > chartContainer.clientWidth;
+  };
+
+  // Check if user has scrolled
+  const hasScrolled = () => {
+    return chartContainer.scrollLeft > 0;
+  };
+
+  // Update classes based on scroll state
+  const updateScrollState = () => {
+    if (isScrollable()) {
+      chartContainer.classList.add('scrollable');
+      if (hasScrolled()) {
+        chartContainer.classList.add('scrolled');
+      } else {
+        chartContainer.classList.remove('scrolled');
+      }
+    } else {
+      chartContainer.classList.remove('scrollable', 'scrolled');
+    }
+  };
+
+  // Listen for scroll events
+  chartContainer.addEventListener('scroll', updateScrollState);
+  
+  // Listen for resize events
+  window.addEventListener('resize', () => {
+    setTimeout(updateScrollState, 100); // Small delay to ensure layout is updated
+  });
+
+  // Initial check
+  setTimeout(updateScrollState, 200); // Delay to ensure chart is rendered
+}
 
 // Initialize the chart when the page loads
 document.addEventListener('DOMContentLoaded', renderChart);
