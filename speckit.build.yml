@@ -5,12 +5,15 @@ goal: >
   Implement a vertical Vega-Lite bar chart showing the Top 15 Colorado places by population.
   Bars sorted by population descending; optional color by density (/mi²).
   Emit a DOM CustomEvent `chart:selection` with `{ geoids: string[] }` on bar selection.
+  Enhanced with GSAP animations, responsive mobile layout, and configurable features.
 
 constraints:
   - Keep chart spec and theme in separate JSON files under `specs/vega-lite/`.
   - Data must be loaded from `/data/colorado-cities-enriched.geojson`.
   - Only Top 15 by population should be rendered.
   - Ensure chart is accessible and responsive.
+  - Use GSAP for animations (loaded via CDN).
+  - Support configurable mobile scroll and animation features.
 
 inputs:
   data:
@@ -44,6 +47,34 @@ public_api:
       detail_schema:
         geoids: array[string]
       description: Fired whenever one or more bars are selected in the chart.
+  
+  functions:
+    - name: toggleMobileScroll
+      parameters:
+        enable: boolean
+      description: Enable/disable horizontal scroll on mobile devices.
+    
+    - name: toggleAnimations
+      parameters:
+        enable: boolean
+      description: Enable/disable all bar animations globally.
+    
+    - name: toggleMobileAnimations
+      parameters:
+        enable: boolean
+      description: Enable/disable bar animations on mobile devices only.
+    
+    - name: isMobileScrollEnabled
+      returns: boolean
+      description: Check if mobile scroll is currently enabled.
+    
+    - name: areAnimationsEnabled
+      returns: boolean
+      description: Check if animations are currently enabled.
+    
+    - name: areMobileAnimationsEnabled
+      returns: boolean
+      description: Check if mobile animations are currently enabled.
 
 commands:
   dev: npm run dev
@@ -92,6 +123,44 @@ tasks:
       - Container has role="img" and aria-labelledby.
       - Chart is keyboard reachable; tooltip does not trap focus.
 
+  - id: gsap-animations
+    description: Implement GSAP-powered bar entrance animations.
+    acceptance:
+      - Bars animate from scaleY: 0 to scaleY: 1 with staggered timing.
+      - Animation duration 1.2s with power2.out easing.
+      - Stagger delay of 0.05s between bars.
+      - Initial state prevents flash before animation.
+
+  - id: responsive-mobile
+    description: Implement responsive mobile layout with horizontal scroll.
+    acceptance:
+      - Chart width 480px on mobile (≤480px) with horizontal scroll.
+      - Legend positioned at bottom on mobile, right on desktop.
+      - City labels sized appropriately (10px on small mobile).
+      - Scroll indicator appears when chart is scrollable.
+
+  - id: mobile-scroll-config
+    description: Add configurable mobile scroll functionality.
+    acceptance:
+      - 'mobile-scroll' class enables/disables horizontal scroll.
+      - toggleMobileScroll() function for dynamic control.
+      - Scroll indicator shows/hides based on scroll state.
+
+  - id: animation-config
+    description: Add configurable animation system.
+    acceptance:
+      - 'no-animations' class disables all animations globally.
+      - 'no-mobile-animations' class disables animations on mobile only.
+      - toggleAnimations() and toggleMobileAnimations() functions.
+      - shouldAnimate() function respects configuration classes.
+
+  - id: y-axis-formatting
+    description: Implement Y-axis number formatting with K notation.
+    acceptance:
+      - Numbers ≥1000 display as "K" format (e.g., "500K").
+      - Numbers <1000 display with comma separators.
+      - Formatting applied after chart render.
+
   - id: run-dev
     description: Launch dev server for manual QA.
     run: dev
@@ -102,8 +171,18 @@ checks:
     - X labels readable (rotated/abbreviated) on a ~900px container.
     - Selection updates opacity and fires `chart:selection`.
     - Works in Chrome, Safari, Firefox.
+    - Bar animations work smoothly with GSAP (when enabled).
+    - Mobile layout scrolls horizontally with indicator (when enabled).
+    - Y-axis numbers formatted with K notation for thousands.
+    - Configuration classes work (mobile-scroll, no-animations, no-mobile-animations).
+    - Utility functions work (toggleMobileScroll, toggleAnimations, etc.).
 
 success_criteria:
   - Renders Top 15 correctly from uploaded GeoJSON.
   - `chart:selection` event emitted with correct GEOIDs.
   - Accessible structure and responsive labels.
+  - Smooth GSAP animations with configurable on/off.
+  - Responsive mobile layout with horizontal scroll option.
+  - Y-axis number formatting with K notation.
+  - Configurable features work via CSS classes and JavaScript functions.
+  - Cross-browser compatibility maintained.
