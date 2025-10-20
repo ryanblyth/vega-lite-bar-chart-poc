@@ -36,6 +36,21 @@ h1 {
   outline-offset: 2px;
 }
 
+/* Animation control classes */
+.no-animations .chart-container {
+  /* Disable all animations when .no-animations class is present */
+}
+
+.no-mobile-animations .chart-container {
+  /* Disable mobile animations when .no-mobile-animations class is present */
+}
+
+@media (max-width: 480px) {
+  .no-mobile-animations .chart-container {
+    /* Disable mobile animations at mobile breakpoint */
+  }
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   body {

@@ -62,10 +62,33 @@ async function loadChartSpec() {
   }
 }
 
+// Check if animations should be enabled
+function shouldAnimate() {
+  const body = document.body;
+  const isMobile = window.innerWidth <= 480;
+  
+  // Check global animation setting
+  if (body.classList.contains('no-animations')) {
+    return false;
+  }
+  
+  // Check mobile animation setting
+  if (isMobile && body.classList.contains('no-mobile-animations')) {
+    return false;
+  }
+  
+  return true;
+}
+
 // Animate bars with GSAP
 function animateBars(container) {
   if (typeof gsap === 'undefined') {
     console.error('GSAP is not loaded. Please check the CDN link in index.html');
+    return;
+  }
+  
+  // Check if animations should be enabled
+  if (!shouldAnimate()) {
     return;
   }
   
@@ -193,8 +216,8 @@ async function renderChart() {
       });
     }, 200);
 
-    // Set initial state for bars immediately to prevent flash
-    if (typeof gsap !== 'undefined') {
+    // Set initial state for bars immediately to prevent flash (only if animations are enabled)
+    if (typeof gsap !== 'undefined' && shouldAnimate()) {
       const setInitialState = () => {
         const allPaths = container.querySelectorAll('path');
         const bars = Array.from(allPaths).filter(bar => {
@@ -336,6 +359,37 @@ window.toggleMobileScroll = function(enable) {
 
 window.isMobileScrollEnabled = function() {
   return document.body.classList.contains('mobile-scroll');
+};
+
+// Utility functions for animation configuration
+window.toggleAnimations = function(enable) {
+  const body = document.body;
+  if (enable) {
+    body.classList.remove('no-animations');
+  } else {
+    body.classList.add('no-animations');
+  }
+  // Re-render chart to apply animation changes
+  renderChart();
+};
+
+window.toggleMobileAnimations = function(enable) {
+  const body = document.body;
+  if (enable) {
+    body.classList.remove('no-mobile-animations');
+  } else {
+    body.classList.add('no-mobile-animations');
+  }
+  // Re-render chart to apply animation changes
+  renderChart();
+};
+
+window.areAnimationsEnabled = function() {
+  return !document.body.classList.contains('no-animations');
+};
+
+window.areMobileAnimationsEnabled = function() {
+  return !document.body.classList.contains('no-mobile-animations');
 };
 
 // Initialize the chart when the page loads
