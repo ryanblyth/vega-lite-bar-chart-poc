@@ -13,6 +13,7 @@ Click selection emits `chart:selection` with selected GEOIDs for map coordinatio
 - Tooltips (name, GEOID, pop, density), responsive X‑axis labels.
 - Optional color by density.
 - Selection + CustomEvent `chart:selection`.
+- **Chart animations**: GSAP-powered bar entrance animations with staggered timing.
 
 ## Non‑Goals
 - Multi‑view dashboards, server rendering, persistence.
@@ -21,3 +22,5 @@ Click selection emits `chart:selection` with selected GEOIDs for map coordinatio
 - Only 15 bars render (top 15 by pop), correctly sorted.
 - `chart:selection` fires with accurate `geoids`.
 - Basic accessibility and keyboard operability.
+- **Smooth bar entrance animations** using GSAP with staggered timing (0.05s delay between bars).
+- **Y-axis number formatting** with proper K notation for thousands.
