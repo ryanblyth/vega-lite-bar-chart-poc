@@ -45,12 +45,6 @@ h1 {
   /* Disable mobile animations when .no-mobile-animations class is present */
 }
 
-@media (max-width: 480px) {
-  .no-mobile-animations .chart-container {
-    /* Disable mobile animations at mobile breakpoint */
-  }
-}
-
 /* Responsive adjustments */
 @media (max-width: 768px) {
   body {
@@ -80,18 +74,18 @@ h1 {
   /* Mobile scroll functionality - only when .mobile-scroll class is present */
   .mobile-scroll .chart-container{
     max-width: 100%;
-    overflow-x: auto;     /* horizontal scroll here */
+    overflow-x: auto;
     overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;  /* smooth on iOS */
-    overscroll-behavior-x: contain;     /* stop scroll chaining to page */
-    scrollbar-gutter: stable both-edges;/* optional: nicer layout with scrollbars */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scrollbar-gutter: stable both-edges;
     position: relative;
   }
   
   .mobile-scroll .chart-container > #chart{
-    display: inline-block;     /* or inline-block; either works */
-    gap: 1rem;                /* optional */
-    min-width: max-content;   /* key: don't shrink—be as wide as needed */
+    display: inline-block;
+    gap: 1rem;
+    min-width: max-content;
     width: 480px; /* width of the chart container */
   }
   
