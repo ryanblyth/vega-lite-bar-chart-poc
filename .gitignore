@@ -1,0 +1,49 @@
+# --- Node / package managers ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Lockfiles — RECOMMENDED: commit one lockfile for reproducible builds.
+# If you insist on ignoring, uncomment the one you use.
+# package-lock.json
+
+# --- Vite / build outputs ---
+dist/
+.vite/
+vite.svg
+
+# --- Caches ---
+.eslintcache
+.cache/
+.parcel-cache/
+turbo/
+.rpt2_cache/
+tsbuildinfo.tsbuildinfo
+
+# --- Test / coverage ---
+coverage/
+*.lcov
+
+# --- Env / secrets ---
+.env
+.env.*
+!.env.example
+
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+.idea/
+
+# --- Logs / temp ---
+*.log
+*.tmp
+*.swp
+*.swo
+
+# --- Data ---
+# If the datasets are large/private, ignore the data dir
+# but allow in a small sample (and a placeholder) for local dev.
+#data/**
+
