@@ -268,10 +268,17 @@ window.addEventListener('resize', () => {
   }, 250);
 });
 
-// Setup scroll indicator for mobile
+// Setup scroll indicator for mobile (only when mobile-scroll class is present)
 function setupScrollIndicator() {
   const chartContainer = document.querySelector('.chart-container');
+  const body = document.body;
+  
   if (!chartContainer) return;
+  
+  // Check if mobile scroll is enabled
+  const isMobileScrollEnabled = () => {
+    return body.classList.contains('mobile-scroll');
+  };
 
   // Check if container is scrollable
   const isScrollable = () => {
@@ -285,6 +292,12 @@ function setupScrollIndicator() {
 
   // Update classes based on scroll state
   const updateScrollState = () => {
+    // Only proceed if mobile scroll is enabled
+    if (!isMobileScrollEnabled()) {
+      chartContainer.classList.remove('scrollable', 'scrolled');
+      return;
+    }
+    
     if (isScrollable()) {
       chartContainer.classList.add('scrollable');
       if (hasScrolled()) {
@@ -308,6 +321,22 @@ function setupScrollIndicator() {
   // Initial check
   setTimeout(updateScrollState, 200); // Delay to ensure chart is rendered
 }
+
+// Utility functions for mobile scroll configuration
+window.toggleMobileScroll = function(enable) {
+  const body = document.body;
+  if (enable) {
+    body.classList.add('mobile-scroll');
+  } else {
+    body.classList.remove('mobile-scroll');
+  }
+  // Re-run scroll indicator setup to update state
+  setupScrollIndicator();
+};
+
+window.isMobileScrollEnabled = function() {
+  return document.body.classList.contains('mobile-scroll');
+};
 
 // Initialize the chart when the page loads
 document.addEventListener('DOMContentLoaded', renderChart);

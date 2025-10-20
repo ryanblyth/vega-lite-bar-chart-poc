@@ -57,8 +57,13 @@ h1 {
 }
 
 @media (max-width: 480px) {
-/* The scroll container */
-  .chart-container{
+  #chart {
+    height: 500px;
+    min-height: 500px;
+  }
+  
+  /* Mobile scroll functionality - only when .mobile-scroll class is present */
+  .mobile-scroll .chart-container{
     max-width: 100%;
     overflow-x: auto;     /* horizontal scroll here */
     overflow-y: hidden;
@@ -67,19 +72,16 @@ h1 {
     scrollbar-gutter: stable both-edges;/* optional: nicer layout with scrollbars */
     position: relative;
   }
-  #chart {
-    height: 500px;
-    min-height: 500px;
-  }
-  .chart-container > #chart{
+  
+  .mobile-scroll .chart-container > #chart{
     display: inline-block;     /* or inline-block; either works */
     gap: 1rem;                /* optional */
     min-width: max-content;   /* key: don't shrink—be as wide as needed */
-    width: 600px;
+    width: 480px; /* width of the chart container */
   }
   
-  /* Scroll indicator */
-  .chart-container::after {
+  /* Scroll indicator - only when mobile scroll is enabled */
+  .mobile-scroll .chart-container::after {
     content: "← Swipe to see more →";
     position: absolute;
     top: 10px;
@@ -97,7 +99,7 @@ h1 {
   }
   
   /* Show indicator when scrollable and not scrolled */
-  .chart-container.scrollable:not(.scrolled)::after {
+  .mobile-scroll .chart-container.scrollable:not(.scrolled)::after {
     opacity: 0.8;
   }
 }
