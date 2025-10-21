@@ -1,14 +1,17 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  root: 'src',
+  root: '.',
   build: {
-    outDir: '../dist',
-    emptyOutDir: true
+    outDir: 'dist',
+    emptyOutDir: true,
+    rollupOptions: {
+      input: 'src/index.html'
+    }
   },
   server: {
     port: 5173
   },
-  publicDir: '../public',
+  publicDir: 'public',
   assetsInclude: ['**/*.geojson', '**/*.json']
 });

@@ -3,7 +3,7 @@ import vegaEmbed from 'vega-embed';
 // Load and transform GeoJSON data
 async function loadAndTransformData() {
   try {
-    const response = await fetch('./data/colorado-cities-enriched.geojson');
+    const response = await fetch('../data/colorado-cities-enriched.geojson');
     const geojson = await response.json();
     
     // Transform FeatureCollection to table rows
@@ -43,7 +43,7 @@ async function loadAndTransformData() {
 // Load theme configuration
 async function loadTheme() {
   try {
-    const response = await fetch('./specs/vega-lite/theme.json');
+    const response = await fetch('./vega-lite/theme.json');
     return await response.json();
   } catch (error) {
     console.error('Error loading theme:', error);
@@ -54,7 +54,7 @@ async function loadTheme() {
 // Load chart specification
 async function loadChartSpec() {
   try {
-    const response = await fetch('./specs/vega-lite/chart.json');
+    const response = await fetch(`./vega-lite/chart.json?t=${Date.now()}`);
     return await response.json();
   } catch (error) {
     console.error('Error loading chart spec:', error);
@@ -185,7 +185,6 @@ async function renderChart() {
     };
 
     // Create the Vega-Lite view
-
     const result = await vegaEmbed(container, spec, {
       actions: false,
       renderer: 'svg'
@@ -193,7 +192,6 @@ async function renderChart() {
       console.error('Vega-Lite embed error:', error);
       throw error;
     });
-    
 
     // Fix Y-axis number formatting
     setTimeout(() => {

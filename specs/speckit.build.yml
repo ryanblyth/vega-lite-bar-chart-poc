@@ -8,12 +8,13 @@ goal: >
   Enhanced with GSAP animations, responsive mobile layout, and configurable features.
 
 constraints:
-  - Keep chart spec and theme in separate JSON files under `specs/vega-lite/`.
+  - Keep chart spec and theme in separate JSON files under `src/vega-lite/`.
   - Data must be loaded from `/data/colorado-cities-enriched.geojson`.
   - Only Top 15 by population should be rendered.
   - Ensure chart is accessible and responsive.
   - Use GSAP for animations (loaded via CDN).
   - Support configurable mobile scroll and animation features.
+  - Follow proper Spec-Kit structure with specs/ and src/ directories.
 
 inputs:
   data:
@@ -30,9 +31,9 @@ inputs:
 deliverables:
   - path: package.json
     type: node-package
-  - path: specs/vega-lite/chart.json
+  - path: src/vega-lite/chart.json
     type: vega-lite-spec
-  - path: specs/vega-lite/theme.json
+  - path: src/vega-lite/theme.json
     type: vega-lite-theme
   - path: src/index.html
     type: html
@@ -40,6 +41,8 @@ deliverables:
     type: css
   - path: src/embed.js
     type: module
+  - path: vite.config.js
+    type: config
 
 public_api:
   events:
@@ -186,3 +189,5 @@ success_criteria:
   - Y-axis number formatting with K notation.
   - Configurable features work via CSS classes and JavaScript functions.
   - Cross-browser compatibility maintained.
+  - Proper Spec-Kit structure with specs/ and src/ directories.
+  - Clean, optimized code with no unnecessary dependencies.
