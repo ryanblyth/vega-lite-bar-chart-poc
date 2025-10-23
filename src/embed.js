@@ -1,4 +1,5 @@
 import vegaEmbed from 'vega-embed';
+import './scrolltrigger.js';
 
 // Load and transform GeoJSON data
 async function loadAndTransformData() {
@@ -80,6 +81,18 @@ function shouldAnimate() {
   return true;
 }
 
+// Check if ScrollTrigger animations should be enabled
+function shouldUseScrollTrigger() {
+  const body = document.body;
+  return body.classList.contains('scroll-trigger-animations');
+}
+
+// Check if Lenis smooth scroll should be enabled
+function shouldUseLenis() {
+  const body = document.body;
+  return body.classList.contains('smooth-scroll') || body.classList.contains('scroll-trigger-animations');
+}
+
 // Animate bars with GSAP
 function animateBars(container) {
   if (typeof gsap === 'undefined') {
@@ -150,6 +163,7 @@ async function renderChart() {
     const isMobile = window.innerWidth <= 768;
     const isSmallMobile = window.innerWidth <= 480;
     
+    
     const adjustedChartSpec = {
       ...chartSpec,
       encoding: {
@@ -184,6 +198,7 @@ async function renderChart() {
       }
     };
 
+
     // Create the Vega-Lite view
     const result = await vegaEmbed(container, spec, {
       actions: false,
@@ -212,6 +227,7 @@ async function renderChart() {
           }
         }
       });
+
     }, 200);
 
     // Set initial state for bars immediately to prevent flash (only if animations are enabled)
@@ -238,8 +254,27 @@ async function renderChart() {
       }
     }
     
-    // Animate bars with GSAP
-    animateBars(container);
+    // Animate bars with GSAP (only if not using ScrollTrigger)
+    if (!shouldUseScrollTrigger()) {
+      animateBars(container);
+    }
+
+    // Initialize ScrollTrigger and Lenis if enabled
+    if (shouldUseScrollTrigger()) {
+      // Enable ScrollTrigger animations
+      // Call the ScrollTrigger module functions directly
+      if (window.enableScrollTrigger) {
+        window.enableScrollTrigger(container);
+      }
+      if (window.enableLenis) {
+        window.enableLenis();
+      }
+    } else if (shouldUseLenis()) {
+      // Enable only Lenis smooth scroll
+      if (window.enableLenis) {
+        window.enableLenis();
+      }
+    }
 
     // Set up selection event handling
     const view = result.view;
@@ -285,6 +320,11 @@ window.addEventListener('resize', () => {
     const container = document.getElementById('chart');
     if (container && container.innerHTML.trim()) {
       renderChart();
+    }
+    
+    // Refresh ScrollTrigger on resize
+    if (window.refreshScrollTrigger) {
+      window.refreshScrollTrigger(container);
     }
   }, 250);
 });
@@ -389,6 +429,40 @@ window.areAnimationsEnabled = function() {
 window.areMobileAnimationsEnabled = function() {
   return !document.body.classList.contains('no-mobile-animations');
 };
+
+// ScrollTrigger and Lenis utility functions
+window.toggleScrollTrigger = function(enable) {
+  const body = document.body;
+  if (enable) {
+    body.classList.add('scroll-trigger-animations');
+    body.classList.remove('no-animations'); // Remove no-animations to allow ScrollTrigger
+  } else {
+    body.classList.remove('scroll-trigger-animations');
+  }
+  // Don't call renderChart() here to avoid infinite loop
+  // The ScrollTrigger will be initialized in the main renderChart function
+};
+
+window.toggleLenisSmoothScroll = function(enable) {
+  const body = document.body;
+  if (enable) {
+    body.classList.add('smooth-scroll');
+  } else {
+    body.classList.remove('smooth-scroll');
+  }
+  // Don't call renderChart() here to avoid infinite loop
+  // The Lenis will be initialized in the main renderChart function
+};
+
+window.isScrollTriggerEnabled = function() {
+  return document.body.classList.contains('scroll-trigger-animations');
+};
+
+window.isLenisEnabled = function() {
+  return document.body.classList.contains('smooth-scroll') || document.body.classList.contains('scroll-trigger-animations');
+};
+
+// refreshScrollTrigger function is implemented in scrolltrigger.js
 
 // Initialize the chart when the page loads
 document.addEventListener('DOMContentLoaded', renderChart);

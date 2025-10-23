@@ -1,0 +1,197 @@
+version: 1
+name: scrolltrigger-animations
+goal: >
+  Add ScrollTrigger-powered bar growth animations with Lenis smooth scroll as an additional animation option.
+  Bars should grow from bottom to top as user scrolls, with scrub functionality and smooth scrolling.
+  The chart section should pin in place while bars grow, then unpin when animation completes.
+  This feature should be easily toggleable and work alongside existing GSAP animations.
+
+constraints:
+  - Keep existing GSAP animations unchanged
+  - Add ScrollTrigger + Lenis as additional option, not replacement
+  - Use CDN for ScrollTrigger and Lenis dependencies
+  - Maintain all existing functionality and configuration options
+  - Keep ScrollTrigger code in separate file for modularity
+  - Support both CSS class and JavaScript function control
+  - Lenis should work seamlessly with ScrollTrigger
+
+inputs:
+  dependencies:
+    - name: ScrollTrigger
+      source: CDN
+      url: https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js
+      note: Must be loaded after GSAP
+    - name: Lenis
+      source: CDN
+      url: https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js
+      note: Smooth scroll library for enhanced ScrollTrigger experience
+
+deliverables:
+  - path: src/scrolltrigger.js
+    type: module
+    description: ScrollTrigger animation logic
+  - path: src/index.html
+    type: html
+    description: Updated with ScrollTrigger CDN link
+  - path: src/embed.js
+    type: module
+    description: Updated to integrate ScrollTrigger option
+  - path: src/styles.css
+    type: css
+    description: Updated with ScrollTrigger configuration classes
+
+public_api:
+  functions:
+    - name: toggleScrollTrigger
+      parameters:
+        enable: boolean
+      description: Enable/disable ScrollTrigger animations and Lenis smooth scroll
+    - name: isScrollTriggerEnabled
+      returns: boolean
+      description: Check if ScrollTrigger animations are currently enabled
+    - name: refreshScrollTrigger
+      parameters: []
+      description: Refresh ScrollTrigger calculations after chart updates
+    - name: toggleLenisSmoothScroll
+      parameters:
+        enable: boolean
+      description: Enable/disable Lenis smooth scroll independently
+    - name: isLenisEnabled
+      returns: boolean
+      description: Check if Lenis smooth scroll is currently enabled
+
+  events:
+    - name: scrolltrigger:ready
+      detail_schema:
+        trigger: object
+        lenis: object
+      description: Fired when ScrollTrigger and Lenis are initialized and ready
+    - name: lenis:ready
+      detail_schema:
+        lenis: object
+      description: Fired when Lenis smooth scroll is initialized
+
+tasks:
+  - id: scrolltrigger-cdn
+    description: Add ScrollTrigger and Lenis CDN links to index.html
+    acceptance:
+      - ScrollTrigger CDN loaded after GSAP
+      - Lenis CDN loaded after ScrollTrigger
+      - CDN links point to correct versions
+      - No conflicts with existing GSAP setup
+
+  - id: scrolltrigger-module
+    description: Create separate ScrollTrigger animation module with Lenis integration
+    acceptance:
+      - File: src/scrolltrigger.js
+      - Contains ScrollTrigger animation logic with Lenis integration
+      - Exports functions for enable/disable/refresh
+      - Handles bar growth from bottom to top
+      - Uses scrub for scroll-based animation
+      - Pins chart container during bar growth animation
+      - Unpins when bars reach full height
+      - Initializes and manages Lenis smooth scroll instance
+
+  - id: scrolltrigger-integration
+    description: Integrate ScrollTrigger with existing embed.js
+    acceptance:
+      - ScrollTrigger option added to animation configuration
+      - Works alongside existing GSAP animations
+      - Respects existing animation control classes
+      - ScrollTrigger refreshes when chart re-renders
+
+  - id: scrolltrigger-config
+    description: Add CSS classes and JavaScript functions for ScrollTrigger and Lenis control
+    acceptance:
+      - 'scroll-trigger-animations' class enables ScrollTrigger + Lenis
+      - 'smooth-scroll' class enables Lenis independently
+      - toggleScrollTrigger() function for dynamic control
+      - toggleLenisSmoothScroll() function for Lenis-only control
+      - isScrollTriggerEnabled() and isLenisEnabled() functions for status checking
+      - refreshScrollTrigger() function for manual refresh
+
+  - id: scrolltrigger-behavior
+    description: Implement ScrollTrigger bar growth animation with Lenis smooth scroll and responsive pinning
+    acceptance:
+      - Bars start with scaleY: 0 (bottom-aligned)
+      - Bars grow to scaleY: 1 as user scrolls
+      - Chart section pins in place while bars are growing (desktop and mobile)
+      - Chart unpins automatically when bars reach full height
+      - Smooth scrub animation tied to scroll position (scrub: 1 desktop, 1.5 mobile)
+      - Lenis provides smooth scrolling experience with optimized settings
+      - Animation triggers when main element reaches top of viewport
+      - Works with existing bar selection and interactions
+      - ScrollTrigger works with Lenis scroll events
+      - Pin behavior uses anticipatePin for smooth performance
+      - Mobile detection includes touch support and maxTouchPoints
+      - Different scroll durations: 300vh desktop, 400vh mobile
+      - Pin spacing disabled on mobile to avoid layout issues
+      - Legend gradient bar maintains proper alignment during ScrollTrigger animations
+      - Legend gradient elements are protected from ScrollTrigger transforms
+      - SVG transform attributes are reset to prevent legend misalignment
+
+  - id: scrolltrigger-legend-protection
+    description: Protect legend gradient bar from ScrollTrigger interference
+    acceptance:
+      - Legend gradient elements are identified using .role-legend-gradient selector
+      - Legend gradient elements are protected from ScrollTrigger transforms
+      - SVG transform attributes are reset to prevent legend misalignment
+      - Both parent and child elements of legend gradient are protected
+      - CSS style transforms and SVG transform attributes are both reset
+      - Protection is applied during ScrollTrigger initialization
+      - Protection is continuously maintained during animation updates
+      - Legend gradient bar maintains proper alignment throughout ScrollTrigger animation
+
+  - id: scrolltrigger-responsive
+    description: Ensure ScrollTrigger and Lenis work optimally on mobile and desktop with responsive configurations
+    acceptance:
+      - ScrollTrigger works on mobile devices with comprehensive mobile detection
+      - Lenis smooth scroll works on mobile and desktop with optimized settings
+      - Touch scrolling triggers animation correctly with smooth touch enabled
+      - Responsive behavior matches existing mobile features
+      - No conflicts with mobile scroll functionality
+      - Lenis respects mobile scroll preferences with different configurations
+      - Mobile: duration 1.4s, touchMultiplier 0.8, wheelMultiplier 0.8, lerp 0.08
+      - Desktop: duration 1.0s, wheelMultiplier 1, lerp 0.08
+      - Mobile detection includes window width, user agent, touch support, and maxTouchPoints
+      - Pinning works on both platforms with appropriate pin spacing
+
+checks:
+  manual:
+    - ScrollTrigger and Lenis CDNs load without errors
+    - Bars grow smoothly as user scrolls down with smooth scroll
+    - Chart pins in place while bars are growing (both desktop and mobile)
+    - Chart unpins smoothly when bars reach full height
+    - Lenis provides smooth scrolling experience with optimized settings
+    - Animation can be toggled on/off via CSS class
+    - Animation can be toggled on/off via JavaScript function
+    - Lenis can be toggled independently of ScrollTrigger
+    - ScrollTrigger works alongside existing GSAP animations
+    - No conflicts with mobile scroll or other features
+    - Animation resets properly when scrolling back up
+    - Pinning works correctly when chart is immediately visible at page load
+    - Smooth scroll works on mobile and desktop with responsive configurations
+    - Mobile detection works correctly across different devices
+    - Page scrolling is smooth and responsive (not choppy)
+    - Bar animation is smooth and properly timed
+    - Legend gradient bar maintains proper alignment during ScrollTrigger animations
+    - Legend gradient bar is not affected by ScrollTrigger transforms
+    - Works in Chrome, Safari, Firefox
+
+success_criteria:
+  - ScrollTrigger animations work independently of existing GSAP animations
+  - Chart pins smoothly during bar growth and unpins when complete (both desktop and mobile)
+  - Lenis smooth scroll enhances the scrolling experience with optimized configurations
+  - Easy to enable/disable via CSS class or JavaScript function
+  - Smooth bar growth animation tied to scroll position with responsive scrub settings
+  - Pinning behavior works when chart is immediately visible or requires scrolling
+  - Lenis can be controlled independently of ScrollTrigger
+  - No impact on existing functionality
+  - Clean, modular code structure with comprehensive mobile detection
+  - Cross-browser compatibility maintained
+  - Mobile-friendly scroll behavior with smooth scrolling and pinning
+  - Responsive configurations for optimal performance on different devices
+  - Page scrolling is smooth and responsive without choppiness
+  - Bar animations complete fully before section unpins
+  - Legend gradient bar maintains proper alignment and is not affected by ScrollTrigger transforms
+  - Legend gradient elements are properly protected from ScrollTrigger interference

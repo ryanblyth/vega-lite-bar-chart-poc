@@ -3,24 +3,67 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   margin: 0;
-  padding: 20px;
-  background-color: #f8f9fa;
+  padding: 0;
+  background-color: #ffffff;
+  min-height: 100vh; /* Just enough for the content */
+}
+
+/* Add scroll space only when ScrollTrigger is enabled */
+body.scroll-trigger-animations {
+  padding-bottom: 300vh;
+}
+
+/* Intro section */
+.intro-section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #aaa;
+  color: white;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.intro-content h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.intro-content p {
+  font-size: 1.2rem;
+  margin: 0;
+  opacity: 0.9;
+  max-width: 600px;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .intro-content h2 {
+    font-size: 2rem;
+  }
+  
+  .intro-content p {
+    font-size: 1.1rem;
+  }
 }
 
 main {
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 24px;
+  padding: 0;
 }
 
 h1 {
   color: #2c3e50;
-  margin-bottom: 24px;
-  font-size: 1.5rem;
+  margin: 0;
+  padding: 30px 20px 20px;
+  font-size: 1.8rem;
   font-weight: 600;
+  text-align: center;
 }
 
 #chart {
@@ -45,6 +88,44 @@ h1 {
 .no-mobile-animations .chart-container {
   /* Disable mobile animations when .no-mobile-animations class is present */
 }
+
+/* ScrollTrigger and Lenis control classes */
+.scroll-trigger-animations {
+  /* Enable ScrollTrigger + Lenis when .scroll-trigger-animations class is present */
+}
+
+.smooth-scroll {
+  /* Enable Lenis smooth scroll when .smooth-scroll class is present */
+}
+
+/* ScrollTrigger animations without pinning */
+.scroll-trigger-animations .chart-container {
+  /* Chart container styles for ScrollTrigger animations */
+}
+
+/* Ensure legend positioning works correctly with ScrollTrigger */
+/* .scroll-trigger-animations .vega-embed .vega-legend {
+  position: relative !important;
+  transform: none !important;
+  scale: 1 !important;
+}
+
+.scroll-trigger-animations .vega-embed .vega-legend .vega-legend-gradient {
+  transform: none !important;
+  scale: 1 !important;
+} */
+
+/* Mobile legend positioning with ScrollTrigger */
+/* @media (max-width: 480px) {
+  .scroll-trigger-animations .vega-embed .vega-legend {
+    position: relative !important;
+    bottom: auto !important;
+    right: auto !important;
+    margin-top: 10px !important;
+    padding: 0 10px !important;
+    text-align: center !important;
+  }
+} */
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
