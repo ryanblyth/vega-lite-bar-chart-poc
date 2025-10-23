@@ -163,6 +163,7 @@ async function renderChart() {
     const isMobile = window.innerWidth <= 768;
     const isSmallMobile = window.innerWidth <= 480;
     
+    
     const adjustedChartSpec = {
       ...chartSpec,
       encoding: {
@@ -197,6 +198,7 @@ async function renderChart() {
       }
     };
 
+
     // Create the Vega-Lite view
     const result = await vegaEmbed(container, spec, {
       actions: false,
@@ -225,6 +227,7 @@ async function renderChart() {
           }
         }
       });
+
     }, 200);
 
     // Set initial state for bars immediately to prevent flash (only if animations are enabled)
